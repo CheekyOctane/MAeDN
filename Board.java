@@ -64,7 +64,7 @@ public class Board {
     }
 
     private void initializePieces() { //supposed to map all the fields for the pieces and place them on the board
-        piecePositions.add(new Point(1250, 880));
+        piecePositions.add(new Point(1250, 880)); // Add a field to the list, fields will be numbered from 0 to end
         piecePositions.add(new Point(1300, 880));
         addCircle(piecePositions.get(0).x, piecePositions.get(0).y, Color.RED); // Example of how to add a piece using the piecePositions list
         addCircle(piecePositions.get(1).x, piecePositions.get(1).y, Color.BLUE);
