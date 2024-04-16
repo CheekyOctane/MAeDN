@@ -1,95 +1,141 @@
-import java.awt.*;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class Board {
     private List<Piece> circles;
     private List<Point> piecePositions;
-    private JLabel imageLabel;
+    private JLabel imageLabel1, imageLabel2;
+    private JFrame frame;
+    private ImageIcon icon1, icon2;
+    private JTextField infoField1, infoField2;
+    private PositionManager positionManager;
 
     public Board() {
         circles = new ArrayList<>();
         piecePositions = new ArrayList<>();
-        JFrame frame = new JFrame("Spiel");
-        ImageIcon icon = new ImageIcon("board.png");
-        JLabel label = new JLabel(icon) {
-            @Override
-            protected void paintComponent(Graphics g) { // Override for a paint method to create custom figures on the board
-                super.paintComponent(g);
-                Graphics2D g2d = (Graphics2D) g;
+        positionManager = new PositionManager();
+        infoField1 = new JTextField();
+        infoField1.setEditable(false);
+        infoField2 = new JTextField();
+        infoField2.setEditable(false);
+        // Example: Add positions
+        positionManager.addPosition(200, 200);
+        frame = new JFrame("Spiel");
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        icon1 = new ImageIcon("board.png");
+        icon2 = new ImageIcon("dice_1.png");
 
+        imageLabel1 = new JLabel(icon1) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
                 for (Piece circle : circles) {
                     if (circle.isVisible()) {
-                        g2d.setColor(circle.getColor().darker());
-                        g2d.fillOval(circle.getX(), circle.getY(), 50, 50);
-
-                        g2d.setColor(Color.BLACK);
-                        g2d.setStroke(new BasicStroke(2));
-                        g2d.drawOval(circle.getX(), circle.getY(), 50, 50);
+                        g.setColor(circle.getColor());
+                        g.fillOval(circle.getX(), circle.getY(), 50, 50);
                     }
                 }
             }
         };
-        label.addMouseListener(new MouseAdapter() {
+        imageLabel2 = new JLabel(icon2);
+        frame.addComponentListener(new ComponentAdapter() {
             @Override
-            public void mouseClicked(MouseEvent event) { //Overrides the event and checks if the mouse is clicked on a piece
-                for (Piece circle : circles) { //Checks for every circle if it is the one that got clicked (if any)
-                    if (circle.isVisible()) {
-                        if (event.getX() >= circle.getX() && event.getX() <= circle.getX() + 50 && event.getY() >= circle.getY() && event.getY() <= circle.getY() + 50) {
-                            System.out.println("Clicked on circle " + circle.getNumber()); // Can be replaced with any other action
-                            replaceImage("dice_2.PNG");
-                        }
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                infoField1.setBounds((frame.getWidth() - 300) / 2, 10, 300, 50);
+                infoField1.setFont(new Font("Arial", Font.PLAIN, 20));
+                infoField1.setHorizontalAlignment(JTextField.CENTER);
+                infoField2.setBounds((frame.getWidth() - 300) / 2, 70, 300, 50);
+                infoField2.setFont(new Font("Arial", Font.PLAIN, 20));
+                infoField2.setHorizontalAlignment(JTextField.CENTER);
+                // Position the images
+                imageLabel1.setBounds((frame.getWidth() - icon1.getIconWidth()) / 2, (frame.getHeight() - icon1.getIconHeight()) / 2, icon1.getIconWidth(), icon1.getIconHeight());
+                imageLabel2.setBounds((3 * frame.getWidth() / 4) - (icon2.getIconWidth() / 2), frame.getHeight() / 2, icon2.getIconWidth(), icon2.getIconHeight());
+            }
+        });
+
+        imageLabel1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                for (Piece circle : circles) {
+                    if (circle.isVisible() && isPieceWithinBounds(e.getX(), e.getY(), circle)) {
+                        System.out.println("Clicked on circle number " + circle.getNumber());
                     }
                 }
             }
         });
-        frame.add(label);
-        frame.pack();
+
+        imageLabel2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                System.out.println("Clicked on the second image");
+                replaceDiceImage("dice_2.png");
+            }
+        });
+
+        // Position the images
+        imageLabel1.setBounds(0, 0, icon1.getIconWidth(), icon1.getIconHeight());
+        imageLabel2.setBounds(frame.getWidth() - icon2.getIconWidth(), frame.getHeight() / 2, icon2.getIconWidth(), icon2.getIconHeight());
+
+        // Add the images to the frame
+        frame.add(imageLabel1);
+        frame.add(imageLabel2);
+        frame.add(infoField1);
+        frame.add(infoField2);
+
+        frame.setLayout(null);
+        frame.setSize(800, 600);
         frame.setVisible(true);
-        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        initializePieces();
-        /*addCircle(1250, 880, Color.RED); // Adding a red piece
-        addCircle(1300, 880, Color.BLUE); // Adding a blue piece
-        addCircle(1350, 880, Color.GREEN); // Adding a green piece */
-        moveCircle(circles.get(0), 1000, 500); // Moving the red piece, example
-        imageLabel = new JLabel();
-        imageLabel.setHorizontalAlignment(JLabel.RIGHT);
-        imageLabel.setVerticalAlignment(JLabel.BOTTOM);
-        addImage("dice_2.PNG"); // add an image to the JLabel
-
-        frame.add(imageLabel, BorderLayout.SOUTH);
-    }
-
-    private void initializePieces() { //supposed to map all the fields for the pieces and place them on the board
-        piecePositions.add(new Point(1250, 880));
-        piecePositions.add(new Point(1300, 880));
-        addCircle(piecePositions.get(0).x, piecePositions.get(0).y, Color.RED); // Example of how to add a piece using the piecePositions list
-        addCircle(piecePositions.get(1).x, piecePositions.get(1).y, Color.BLUE);
-
+        setInfoFieldText("Info Field 1", 1);
     }
 
     public void addCircle(int x, int y, Color color) {
         circles.add(new Piece(x, y, color));
+        frame.repaint(); // Repaint the frame to reflect the new circle
     }
 
-    public void moveCircle(Piece circle, int newX, int newY) {
-        circle.move(newX, newY);
+    public void movePiece(Piece piece, int newX, int newY) {
+        piece.move(newX, newY);
+        // Redraw the frame to reflect the new position of the circle
+        frame.repaint();
     }
 
-    public void addImage(String imagePath) {
-        imageLabel.setIcon(null); // remove the previous icon
-        ImageIcon imageIcon = new ImageIcon(imagePath);
-        imageLabel.setIcon(imageIcon);
+    public void replaceDiceImage(String newImagePath) {
+        icon2 = new ImageIcon(newImagePath);
+        imageLabel2.setIcon(icon2);
+        // Redraw the frame to reflect the new image
+        frame.repaint();
     }
 
-    public void replaceImage(String newImagePath) {
-        addImage(newImagePath);
+    private boolean isPieceWithinBounds(int x, int y, Piece circle) {
+        int centerX = circle.getX() + 25; // Center of the circle
+        int centerY = circle.getY() + 25; // Center of the circle
+        // Check if the point is within the circle
+        return Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2) <= Math.pow(25, 2);
+    }
+
+    public void setInfoFieldText(String text, int fieldNumber) {
+        if (fieldNumber == 1) {
+            infoField1.setText(text);
+        } else if (fieldNumber == 2) {
+            infoField2.setText(text);
+        }
     }
 
     public static void main(String args[]) {
-    Board board = new Board();
+        Board board = new Board();
+        // Example: Add circles
+        board.addCircle(200, 200, Color.RED);
+        board.addCircle(300, 300, Color.BLUE);
+        board.movePiece(board.circles.get(0), 400, 400);
     }
 }
