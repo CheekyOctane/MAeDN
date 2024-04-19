@@ -128,6 +128,8 @@ public class Board {
     }
 
     public void animateDice() {
+        if (dice.isInAnimation) {return;}   //checks if isInAnimation is true or false. False --> return is not executed --> code below is executed 
+        dice.isInAnimation = true;
         timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -137,6 +139,7 @@ public class Board {
                 if (loops == 10) {
                     timer.stop();
                     loops = 0;
+                    dice.isInAnimation = false;
                 } else {
                     timer.setDelay(loops * 100);
                 }
@@ -144,6 +147,8 @@ public class Board {
         });
         timer.start();
     }
+
+
 
     private boolean isPieceWithinBounds(int x, int y, Piece circle) {
         int centerX = circle.getX() + 25; // Center of the circle
