@@ -1,25 +1,27 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 
 public class Board {
     private List<Piece> circles;
     private List<Point> piecePositions;
-    private JLabel imageLabel1, imageLabel2;
+    private JLabel imageLabel1, diceLabel;
     private JFrame frame;
-    private ImageIcon icon1, icon2;
+    private ImageIcon icon1, diceIcon;
     private JTextField infoField1, infoField2;
     private PositionManager positionManager;
+    private Dice dice;
+    private Timer timer;
+    private int loops;
 
-    public Board() {
+    public Board(String gameMode) {
         circles = new ArrayList<>();
         piecePositions = new ArrayList<>();
         positionManager = new PositionManager();
+        dice = new Dice();
+        loops = 0;
         infoField1 = new JTextField();
         infoField1.setEditable(false);
         infoField2 = new JTextField();
@@ -30,7 +32,7 @@ public class Board {
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         icon1 = new ImageIcon("board.png");
-        icon2 = new ImageIcon("dice_1.png");
+        diceIcon = new ImageIcon("dice_1.png");
 
         imageLabel1 = new JLabel(icon1) {
             @Override
@@ -44,7 +46,7 @@ public class Board {
                 }
             }
         };
-        imageLabel2 = new JLabel(icon2);
+        diceLabel = new JLabel(diceIcon);
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -57,7 +59,7 @@ public class Board {
                 infoField2.setHorizontalAlignment(JTextField.CENTER);
                 // Position the images
                 imageLabel1.setBounds((frame.getWidth() - icon1.getIconWidth()) / 2, (frame.getHeight() - icon1.getIconHeight()) / 2, icon1.getIconWidth(), icon1.getIconHeight());
-                imageLabel2.setBounds((3 * frame.getWidth() / 4) - (icon2.getIconWidth() / 2), frame.getHeight() / 2, icon2.getIconWidth(), icon2.getIconHeight());
+                diceLabel.setBounds((3 * frame.getWidth() / 4) - (diceIcon.getIconWidth() / 2), frame.getHeight() / 2, diceIcon.getIconWidth(), diceIcon.getIconHeight());
             }
         });
 
@@ -73,22 +75,21 @@ public class Board {
             }
         });
 
-        imageLabel2.addMouseListener(new MouseAdapter() {
+        diceLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                System.out.println("Clicked on the second image");
-                replaceDiceImage("dice_2.png");
+                animateDice();
             }
         });
 
         // Position the images
         imageLabel1.setBounds(0, 0, icon1.getIconWidth(), icon1.getIconHeight());
-        imageLabel2.setBounds(frame.getWidth() - icon2.getIconWidth(), frame.getHeight() / 2, icon2.getIconWidth(), icon2.getIconHeight());
+        diceLabel.setBounds(frame.getWidth() - diceIcon.getIconWidth(), frame.getHeight() / 2, diceIcon.getIconWidth(), diceIcon.getIconHeight());
 
         // Add the images to the frame
         frame.add(imageLabel1);
-        frame.add(imageLabel2);
+        frame.add(diceLabel);
         frame.add(infoField1);
         frame.add(infoField2);
 
@@ -96,6 +97,10 @@ public class Board {
         frame.setSize(800, 600);
         frame.setVisible(true);
         setInfoFieldText("Info Field 1", 1);
+
+        addCircle(200, 200, Color.RED);
+        addCircle(300, 300, Color.BLUE);
+        movePiece(circles.get(0), 400, 400);
     }
 
     public void addCircle(int x, int y, Color color) {
@@ -109,11 +114,35 @@ public class Board {
         frame.repaint();
     }
 
-    public void replaceDiceImage(String newImagePath) {
-        icon2 = new ImageIcon(newImagePath);
-        imageLabel2.setIcon(icon2);
+    public void showDice(int eyes) {
+        diceIcon = new ImageIcon(getDiceIcon(eyes));
+        diceLabel.setIcon(diceIcon);
         // Redraw the frame to reflect the new image
         frame.repaint();
+    }
+
+    //generates the dice file path from the amount of eyes on the requested dice
+    private static String getDiceIcon(int eyes){
+        String iconName = "dice_" + String.valueOf(eyes) + ".PNG";
+        return iconName;
+    }
+
+    public void animateDice() {
+        timer = new Timer(100, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dice.roll();
+                showDice(dice.eyes);
+                loops++;
+                if (loops == 10) {
+                    timer.stop();
+                    loops = 0;
+                } else {
+                    timer.setDelay(loops * 100);
+                }
+            }
+        });
+        timer.start();
     }
 
     private boolean isPieceWithinBounds(int x, int y, Piece circle) {
@@ -129,13 +158,5 @@ public class Board {
         } else if (fieldNumber == 2) {
             infoField2.setText(text);
         }
-    }
-
-    public static void main(String args[]) {
-        Board board = new Board();
-        // Example: Add circles
-        board.addCircle(200, 200, Color.RED);
-        board.addCircle(300, 300, Color.BLUE);
-        board.movePiece(board.circles.get(0), 400, 400);
     }
 }
