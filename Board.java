@@ -3,10 +3,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 
 public class Board {
     private List<Piece> circles;
-    private List<Point> piecePositions;
+    // private List<Point> piecePositions;
     private JLabel imageLabel1, diceLabel;
     private JFrame frame;
     private ImageIcon icon1, diceIcon;
@@ -15,10 +16,11 @@ public class Board {
     private Dice dice;
     private Timer timer;
     private int loops;
+    private HashMap<Integer, Integer> piecePositions;
 
     public Board(String gameMode) {
         circles = new ArrayList<>();
-        piecePositions = new ArrayList<>();
+        piecePositions = new HashMap<Integer, Integer>(); //creates a HashMap that saves the positions of all pieces
         positionManager = new PositionManager();
         dice = new Dice();
         loops = 0;
@@ -96,10 +98,12 @@ public class Board {
         frame.setLayout(null);
         frame.setSize(800, 600);
         frame.setVisible(true);
-        setInfoFieldText("Info Field 1", 1);
+        setInfoFieldText("Red to move", 1);
 
         addCircle(200, 200, Color.RED);
+        piecePositions.put(circles.get(0).getNumber(), 1);
         addCircle(300, 300, Color.BLUE);
+
         movePiece(circles.get(0), 400, 400);
     }
 
@@ -129,11 +133,11 @@ public class Board {
 
     public void animateDice() {
         if (dice.isInAnimation) {return;}   //checks if isInAnimation is true or false. False --> return is not executed --> code below is executed 
-        dice.isInAnimation = true;
+        dice.isInAnimation = true;  //isInAnimation is true so aniamteDice() cant be used again 
         timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dice.roll();
+                dice.roll();    
                 showDice(dice.eyes);
                 loops++;
                 if (loops == 10) {
