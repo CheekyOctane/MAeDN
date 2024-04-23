@@ -2,7 +2,8 @@ import java.awt.*;
 
 public class Piece {
     private static int nextNumber = 1; // static field to keep track of the next number to assign
-    private int x, y, number;
+    private int x, y;
+    private int number;
     private Color color;
     private boolean isVisible;
 
