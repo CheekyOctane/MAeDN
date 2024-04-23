@@ -43,7 +43,7 @@ public class Board {
                 for (Piece circle : circles) {
                     if (circle.isVisible()) {
                         g.setColor(circle.getColor());
-                        g.fillOval((int)circle.getX(), (int)circle.getY(), 50, 50);
+                        g.fillOval(circle.getX(), circle.getY(), 50, 50);
                     }
                 }
             }
@@ -176,8 +176,8 @@ public class Board {
 
 
     private boolean isPieceWithinBounds(int x, int y, Piece circle) {
-        int centerX = (int)circle.getX() + 25; // Center of the circle
-        int centerY = (int)circle.getY() + 25; // Center of the circle
+        int centerX = circle.getX() + 25; // Center of the circle
+        int centerY = circle.getY() + 25; // Center of the circle
         // Check if the point is within the circle
         return Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2) <= Math.pow(25, 2);
     }
