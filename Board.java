@@ -107,6 +107,11 @@ public class Board {
         addCircle(300, 300, Color.BLUE);    //test circle
 
         movePiece(circles.get(0), 400, 400);    //test move
+        setPath();
+    }
+
+    private void setPath() {
+        //positionManager.addPosition(100, 100);
     }
 
     public void addCircle(int x, int y, Color color) {
