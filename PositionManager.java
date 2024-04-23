@@ -10,7 +10,7 @@ public class PositionManager {
     }
 
     public void addPosition(int x, int y) {
-        availablePositions.add(new Point(x, y));
+        availablePositions.add(new Point(x-25, y-25));
     }
 
     public void removePosition(int index) {
@@ -18,6 +18,6 @@ public class PositionManager {
     }
 
     public Point getPosition(int index) {
-        return availablePositions.get(index+1);
+        return availablePositions.get(index-1);
     }
 }

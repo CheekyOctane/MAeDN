@@ -29,8 +29,6 @@ public class Board {
         infoField1.setEditable(false);
         infoField2 = new JTextField();
         infoField2.setEditable(false);
-        // Example: Add positions
-        positionManager.addPosition(200, 200);  //test position
         frame = new JFrame("Spiel");    //adds the frame for the game
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);      //maximizes the frames size
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -102,20 +100,36 @@ public class Board {
         frame.setVisible(true);     //makes the frame visible
         setInfoFieldText("Red to move", 1);     //sets the Info field text to "Red to move"
 
-        addCircle(200, 200, Color.RED);     //test circle
-        piecePositions.put(circles.get(0).getNumber(), 1);
-        addCircle(300, 300, Color.BLUE);    //test circle
-
-        movePiece(circles.get(0), 400, 400);    //test move
+        //movePiece(circles.get(0), 500, 500);    //test move
         setPath();
+        //addAllCircle();
+        addCircle((int)positionManager.getPosition(1).getX(), (int)positionManager.getPosition(1).getY(), Color.GREEN); //hier kannst du es ausprobieren
     }
 
     private void setPath() {
-        //positionManager.addPosition(100, 100);
+        //positionManager.addPosition(387, 256);
+        //bitte als erstes die 16 Randfelder reinschreiben, bei Rot starten im Uhrzeigersinn
+        //und danach die 16 Zielfelder genauso wie die Randfelder
     }
 
     public void addCircle(int x, int y, Color color) {
         circles.add(new Piece(x, y, color));    //creates a new piece with the arguments and adds it to the circles list
+        frame.repaint();    // Repaints the frame to reflect the new circle
+    }
+
+    public void addAllCircle() {
+        Color currentColor = Color.RED;
+        for (int i = 1; i < 17; i++) {
+            circles.add(new Piece((int)positionManager.getPosition(i).getX(), (int)positionManager.getPosition(i).getY(), currentColor));
+            piecePositions.put(circles.get(i-1).getNumber(), i);
+            if (i > 3 && i < 8) {
+                currentColor = Color.BLUE;
+            } else if (i > 7 && i < 12) {
+                currentColor = Color.YELLOW;
+            } else if (i > 11) {
+                currentColor = Color.GREEN;
+            }
+        } 
         frame.repaint();    // Repaints the frame to reflect the new circle
     }
 
