@@ -43,7 +43,9 @@ public class Launcher {
             @Override
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // close the launcher window
-                new Board((String) button.getClientProperty("attribute")); // open the board window and pass the selected value on
+                Board board = new Board((String) button.getClientProperty("attribute")); // open the board window and pass the selected value on
+                Game game = new Game(board);
+                board.setGameObject(game);
             }
         });
         return button;

@@ -13,10 +13,11 @@ public class Board {
     private ImageIcon boardIcon, diceIcon;
     private JTextField infoField1, infoField2;
     private PositionManager positionManager;
-    private Dice dice;
+    public Dice dice;
     private Timer timer;
     private int loops;
-    private HashMap<Integer, Integer> piecePositions;
+    public HashMap<Integer, Integer> piecePositions;
+    private Game game;
 
     public Board(String gameMode) {
         circles = new ArrayList<>();    //adds list for the circles
@@ -71,7 +72,8 @@ public class Board {
                 super.mouseClicked(e);
                 for (Piece circle : circles) {
                     if (circle.isVisible() && isPieceWithinBounds(e.getX(), e.getY(), circle)) {
-                        System.out.println("Clicked on circle number " + circle.getNumber());
+                        //System.out.println("Clicked on circle number " + circle.getNumber());
+                        game.handlePieceInput(circle);
                     }
                 }
             }
@@ -81,7 +83,7 @@ public class Board {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                animateDice();
+                game.handleDiceInput();
             }
         });
 
@@ -98,7 +100,8 @@ public class Board {
         frame.setLayout(null);
         frame.setSize(800, 600);    //sets the frame size
         frame.setVisible(true);     //makes the frame visible
-        setInfoFieldText("Red to move", 1);     //sets the Info field text to "Red to move"
+        setInfoFieldText("Red to move", 1);     //sets the Info field text to "Red to move" and therefore initializes the text
+        setInfoFieldText("Available moves: 0", 2); //initializes the second Info field text
 
         //movePiece(circles.get(0), 500, 500);    //test move
         setPath();
@@ -218,7 +221,7 @@ public class Board {
     }
 
     //starts the dice Animation
-    public void animateDice() {
+    public void animateDice(int finalNumber, Runnable onAnimationEnd) { //Runnable is a callback that I can give code to and that I can execute at any time
         if (dice.isInAnimation) {return;}   //checks if isInAnimation is true or false. False --> return is not executed --> code below is executed 
         dice.isInAnimation = true;  //sets the variable isInAnimation to true so animateDice() can not be used again 
 
@@ -232,6 +235,8 @@ public class Board {
                     timer.stop();       //it stops the timer
                     loops = 0;          //sets the loops to 0
                     dice.isInAnimation = false;     //sets the isInAnimation variable to false so the dice Animation can be started again
+                    showDice(finalNumber);  //shows the final dice number
+                    onAnimationEnd.run();   //runs code that should be executed after animation
                 } else {
                     timer.setDelay(loops * 100);    //makes the delay 0.1 seconds longer after every loop
                 }
@@ -256,5 +261,9 @@ public class Board {
         } else if (fieldNumber == 2) {
             infoField2.setText(text);
         }
+    }
+
+    public void setGameObject(Game game) {
+        this.game = game;
     }
 }
