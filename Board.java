@@ -12,7 +12,7 @@ public class Board {
     private JFrame frame;
     private ImageIcon boardIcon, diceIcon;
     private JTextField infoField1, infoField2;
-    private PositionManager positionManager;
+    public PositionManager positionManager;
     public Dice dice;
     private Timer timer;
     private int loops;
