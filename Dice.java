@@ -8,7 +8,7 @@ public class Dice {
     }
     
     public int roll() {
-        eyes = (int)(java.lang.Math.random()*5) + 1;    //sets the dice variable to a random number between 1 and 6
+        eyes = (int)(java.lang.Math.random()*6) + 1;    //sets the dice variable to a random number between 1 and 6
         return eyes; 
     }
 }

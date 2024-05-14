@@ -12,11 +12,12 @@ public class Board {
     private JFrame frame;
     private ImageIcon boardIcon, diceIcon;
     private JTextField infoField1, infoField2;
-    private PositionManager positionManager;
-    private Dice dice;
+    public PositionManager positionManager;
+    public Dice dice;
     private Timer timer;
     private int loops;
-    private HashMap<Integer, Integer> piecePositions;
+    public HashMap<Integer, Integer> piecePositions;
+    private Game game;
 
     public Board(String gameMode) {
         circles = new ArrayList<>();    //adds list for the circles
@@ -29,8 +30,6 @@ public class Board {
         infoField1.setEditable(false);
         infoField2 = new JTextField();
         infoField2.setEditable(false);
-        // Example: Add positions
-        positionManager.addPosition(200, 200);  //test position
         frame = new JFrame("Spiel");    //adds the frame for the game
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);      //maximizes the frames size
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,7 +72,8 @@ public class Board {
                 super.mouseClicked(e);
                 for (Piece circle : circles) {
                     if (circle.isVisible() && isPieceWithinBounds(e.getX(), e.getY(), circle)) {
-                        System.out.println("Clicked on circle number " + circle.getNumber());
+                        //System.out.println("Clicked on circle number " + circle.getNumber());
+                        game.handlePieceInput(circle);
                     }
                 }
             }
@@ -83,7 +83,7 @@ public class Board {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                animateDice();
+                game.handleDiceInput();
             }
         });
 
@@ -100,22 +100,107 @@ public class Board {
         frame.setLayout(null);
         frame.setSize(800, 600);    //sets the frame size
         frame.setVisible(true);     //makes the frame visible
-        setInfoFieldText("Red to move", 1);     //sets the Info field text to "Red to move"
+        setInfoFieldText("Red to move", 1);     //sets the Info field text to "Red to move" and therefore initializes the text
+        setInfoFieldText("Available moves: 0", 2); //initializes the second Info field text
 
-        addCircle(200, 200, Color.RED);     //test circle
-        piecePositions.put(circles.get(0).getNumber(), 1);
-        addCircle(300, 300, Color.BLUE);    //test circle
-
-        movePiece(circles.get(0), 400, 400);    //test move
+        //movePiece(circles.get(0), 500, 500);    //test move
         setPath();
+        addAllCircle();
     }
 
     private void setPath() {
-        //positionManager.addPosition(100, 100);
+        positionManager.addPosition(645, 645);
+        positionManager.addPosition(645, 710);
+        positionManager.addPosition(710, 710);
+        positionManager.addPosition(710, 645);
+        positionManager.addPosition(64, 645);
+        positionManager.addPosition(64, 710);
+        positionManager.addPosition(129, 710);
+        positionManager.addPosition(129, 645);
+        positionManager.addPosition(64, 64);
+        positionManager.addPosition(64, 129);
+        positionManager.addPosition(129, 129);
+        positionManager.addPosition(129, 64);
+        positionManager.addPosition(645, 64);
+        positionManager.addPosition(645, 129);
+        positionManager.addPosition(710, 129);
+        positionManager.addPosition(710, 64);
+        positionManager.addPosition(645, 387);
+        positionManager.addPosition(581, 387);
+        positionManager.addPosition(516, 387);
+        positionManager.addPosition(452, 387);
+        positionManager.addPosition(387, 645);
+        positionManager.addPosition(387, 581);
+        positionManager.addPosition(387, 516);
+        positionManager.addPosition(387, 452);
+        positionManager.addPosition(129, 387);
+        positionManager.addPosition(193, 387);
+        positionManager.addPosition(257, 387);
+        positionManager.addPosition(322, 387);
+        positionManager.addPosition(387, 129);
+        positionManager.addPosition(387, 193);
+        positionManager.addPosition(387, 257);
+        positionManager.addPosition(387, 322);
+        positionManager.addPosition(710, 452);
+        positionManager.addPosition(645, 452);
+        positionManager.addPosition(580, 452);
+        positionManager.addPosition(515, 452);
+        positionManager.addPosition(452, 452);
+        positionManager.addPosition(452, 516);
+        positionManager.addPosition(452, 581);
+        positionManager.addPosition(452, 646);
+        positionManager.addPosition(452, 710);
+        positionManager.addPosition(387, 710);
+        positionManager.addPosition(322, 710);
+        positionManager.addPosition(322, 646);
+        positionManager.addPosition(322, 581);
+        positionManager.addPosition(322, 516);
+        positionManager.addPosition(322, 452);
+        positionManager.addPosition(257, 452);
+        positionManager.addPosition(193, 452);
+        positionManager.addPosition(128, 452);
+        positionManager.addPosition(64, 452);
+        positionManager.addPosition(64, 387);
+        positionManager.addPosition(64, 322);
+        positionManager.addPosition(129, 322);
+        positionManager.addPosition(193, 322);
+        positionManager.addPosition(257, 322);
+        positionManager.addPosition(322, 322);
+        positionManager.addPosition(322, 257);
+        positionManager.addPosition(322, 193);
+        positionManager.addPosition(322, 129);
+        positionManager.addPosition(322, 64);
+        positionManager.addPosition(387, 64);
+        positionManager.addPosition(452, 64);
+        positionManager.addPosition(452, 129);
+        positionManager.addPosition(452, 193);
+        positionManager.addPosition(452, 258);
+        positionManager.addPosition(452, 322);
+        positionManager.addPosition(516, 322);
+        positionManager.addPosition(581, 322);
+        positionManager.addPosition(646, 322);
+        positionManager.addPosition(710, 322);
+        positionManager.addPosition(710, 387);
     }
 
     public void addCircle(int x, int y, Color color) {
         circles.add(new Piece(x, y, color));    //creates a new piece with the arguments and adds it to the circles list
+        frame.repaint();    // Repaints the frame to reflect the new circle
+    }
+
+    public void addAllCircle() {
+        Color currentColor = Color.RED;
+        for (int i = 1; i < 17; i++) {
+            circles.add(new Piece((int)positionManager.getPosition(i).getX(), (int)positionManager.getPosition(i).getY(), currentColor));
+            piecePositions.put(circles.get(i-1).getNumber(), i);
+            if (i > 3 && i < 8) {
+                currentColor = Color.BLUE;
+            } else if (i > 7 && i < 12) {
+                currentColor = Color.YELLOW;
+            } else if (i > 11) {
+                currentColor = Color.GREEN;
+            }
+        } 
         frame.repaint();    // Repaints the frame to reflect the new circle
     }
 
@@ -132,12 +217,11 @@ public class Board {
 
     //generates the dice file path from the amount of eyes on the requested dice
     private static String getDiceIcon(int eyes){
-        String iconName = "dice_" + String.valueOf(eyes) + ".png";
-        return iconName;
+        return "dice_" + String.valueOf(eyes) + ".png";
     }
 
     //starts the dice Animation
-    public void animateDice() {
+    public void animateDice(int finalNumber, Runnable onAnimationEnd) { //Runnable is a callback that I can give code to and that I can execute at any time
         if (dice.isInAnimation) {return;}   //checks if isInAnimation is true or false. False --> return is not executed --> code below is executed 
         dice.isInAnimation = true;  //sets the variable isInAnimation to true so animateDice() can not be used again 
 
@@ -151,6 +235,8 @@ public class Board {
                     timer.stop();       //it stops the timer
                     loops = 0;          //sets the loops to 0
                     dice.isInAnimation = false;     //sets the isInAnimation variable to false so the dice Animation can be started again
+                    showDice(finalNumber);  //shows the final dice number
+                    onAnimationEnd.run();   //runs code that should be executed after animation
                 } else {
                     timer.setDelay(loops * 100);    //makes the delay 0.1 seconds longer after every loop
                 }
@@ -175,5 +261,9 @@ public class Board {
         } else if (fieldNumber == 2) {
             infoField2.setText(text);
         }
+    }
+
+    public void setGameObject(Game game) {
+        this.game = game;
     }
 }
