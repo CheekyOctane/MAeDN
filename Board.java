@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.HashMap;
 
 public class Board {
-    private List<Piece> circles;
-    // private List<Point> piecePositions;
+    public List<Piece> circles;
     private JLabel boardLabel, diceLabel;
     private JFrame frame;
     private ImageIcon boardIcon, diceIcon;
@@ -228,8 +227,8 @@ public class Board {
         timer = new Timer(100, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                dice.roll();    
-                showDice(dice.eyes);
+                int number = dice.roll(1);    
+                showDice(number);
                 loops++;    //adds 1 to the loops variable  
                 if (loops == 10) {      //checks if the loops = 10, if that's the case
                     timer.stop();       //it stops the timer
